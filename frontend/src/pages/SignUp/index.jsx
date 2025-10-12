@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signUp } from "./api";
 
 export function SignUp() {
@@ -8,10 +8,17 @@ export function SignUp() {
   const [passwordRepeat, setPasswordRepeat] = useState();
   const [apiProgress, setApiProgress] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [generalerror , setGeneralError] = useState();
+
+  useEffect(()=>{
+    setErrors({})
+  },[username])
 
   const onSubmit = async (event) => {
     event.preventDefault();
     setSuccessMessage();
+    setGeneralError();
     setApiProgress(true);
 
     try {
@@ -21,12 +28,16 @@ export function SignUp() {
         password,
       });
       setSuccessMessage(response.data.message);
-    } catch {
-      /* empty */
+    } catch (axiosError) {
+      if (axiosError.response?.data && 
+        axiosError.response.data.status == 400) {
+        setErrors(axiosError.response.data.validationErrors);
+      } else {
+        setGeneralError("Unexpected error occured. Please try again");
+      }
     } finally {
       setApiProgress(false);
     }
-
   };
 
   return (
@@ -43,11 +54,14 @@ export function SignUp() {
               </label>
               <input
                 id="username"
-                className="form-control"
+                className={
+                  errors.username ? "form-control is-invalid" : "form-control"
+                }
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
               />
             </div>
+            <div className="invalid-feedback">{errors.username}</div>
             <div className="mb-3">
               <label htmlFor="email" className="form-label">
                 Email
@@ -84,6 +98,10 @@ export function SignUp() {
 
             {successMessage && (
               <div className="alert alert-success">{successMessage}</div>
+            )}
+
+             {generalerror && (
+              <div className="alert alert-danger">{generalerror}</div>
             )}
 
             <div className="text-center">
