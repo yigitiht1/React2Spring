@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.ws.error.ApiError;
 import com.example.ws.shared.GenericMessage;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class UserController 
 {
@@ -20,7 +22,7 @@ public class UserController
    UserService userService;
 
     @PostMapping("/api/v1/users")
-    ResponseEntity<?> creatUser(@RequestBody User user)
+    ResponseEntity<?> creatUser(@Valid @RequestBody User user)
     {
         ApiError apiError = new ApiError();
         apiError.setPath("/api/v1/users");
