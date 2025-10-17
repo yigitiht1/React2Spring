@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { signUp } from "./api";
+import { Input } from "./components/Input";
 
 export function SignUp() {
   const [username, setUsername] = useState();
@@ -11,9 +12,23 @@ export function SignUp() {
   const [errors, setErrors] = useState({});
   const [generalerror , setGeneralError] = useState();
 
-  useEffect(()=>{
-    setErrors({})
+  useEffect(() => {
+    setErrors(function(lastErrors){
+       return {
+        ...lastErrors,
+        username:undefined
+       };
+    });
   },[username])
+
+    useEffect(() => { 
+    setErrors(function(lastErrors){
+       return {
+        ...lastErrors,
+        email:undefined
+       };
+    });
+  },[email])
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -47,22 +62,21 @@ export function SignUp() {
           <div className="text-center card-header">
             <h1>Sign Up</h1>
           </div>
+
           <div className="card-body">
-            <div className="mb-3">
-              <label htmlFor="username" className="form-label">
-                Username
-              </label>
-              <input
-                id="username"
-                className={
-                  errors.username ? "form-control is-invalid" : "form-control"
-                }
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-              />
-            </div>
-            <div className="invalid-feedback">{errors.username}</div>
-            <div className="mb-3">
+            <Input 
+            id="username"
+            label="username"
+            error={errors.username}
+            onChange={(event) => setUsername(event.target.value)}/>
+
+           <Input 
+            id="email"
+            label="E-mail"
+            error={errors.email}
+            onChange={(event) => setEmail(event.target.value)}/>
+      
+            {/* <div className="mb-3">
               <label htmlFor="email" className="form-label">
                 Email
               </label>
@@ -72,7 +86,7 @@ export function SignUp() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
-            </div>
+            </div> */}
             <div className="mb-3">
               <label htmlFor="password" className="form-label">
                 Password
