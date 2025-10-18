@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { signUp } from "./api";
 import { Input } from "./components/Input";
 
@@ -10,34 +10,34 @@ export function SignUp() {
   const [apiProgress, setApiProgress] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
   const [errors, setErrors] = useState({});
-  const [generalerror , setGeneralError] = useState();
+  const [generalerror, setGeneralError] = useState();
 
   useEffect(() => {
-    setErrors(function(lastErrors){
-       return {
+    setErrors(function (lastErrors) {
+      return {
         ...lastErrors,
-        username:undefined
-       };
+        username: undefined,
+      };
     });
-  },[username])
+  }, [username]);
 
-    useEffect(() => { 
-    setErrors(function(lastErrors){
-       return {
+  useEffect(() => {
+    setErrors(function (lastErrors) {
+      return {
         ...lastErrors,
-        email:undefined
-       };
+        email: undefined,
+      };
     });
-  },[email])
+  }, [email]);
 
-    useEffect(() => { 
-    setErrors(function(lastErrors){
-       return {
+  useEffect(() => {
+    setErrors(function (lastErrors) {
+      return {
         ...lastErrors,
-        password:undefined
-       };
+        password: undefined,
+      };
     });
-  },[password])
+  }, [password]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -53,8 +53,7 @@ export function SignUp() {
       });
       setSuccessMessage(response.data.message);
     } catch (axiosError) {
-      if (axiosError.response?.data && 
-        axiosError.response.data.status == 400) {
+      if (axiosError.response?.data && axiosError.response.data.status == 400) {
         setErrors(axiosError.response.data.validationErrors);
       } else {
         setGeneralError("Unexpected error occured. Please try again");
@@ -63,6 +62,13 @@ export function SignUp() {
       setApiProgress(false);
     }
   };
+
+  const passwordRepeatError = useMemo(() => {
+    if (password && password !== passwordRepeat) {
+      return "Password mismatch";
+    }
+    return "";
+  }, [password, passwordRepeat]);
 
   return (
     <div className="container">
@@ -73,43 +79,41 @@ export function SignUp() {
           </div>
 
           <div className="card-body">
-            <Input 
-            id="username"
-            label="username"
-            error={errors.username}
-            onChange={(event) => setUsername(event.target.value)}/>
+            <Input
+              id="username"
+              label="username"
+              error={errors.username}
+              onChange={(event) => setUsername(event.target.value)}
+            />
 
-           <Input 
-            id="email"
-            label="E-mail"
-            error={errors.email}
-            onChange={(event) => setEmail(event.target.value)}/>
-      
+            <Input
+              id="email"
+              label="E-mail"
+              error={errors.email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
 
-           <Input 
-            id="password"
-            label="Password"
-            error={errors.password}
-            onChange={(event) => setPassword(event.target.value)}
-            type="password"/>
-      
-            <div className="mb-3">
-              <label htmlFor="passwordRepeat" className="form-label">
-                Password Repeat
-              </label>
-              <input
-                id="passwordRepeat"
-                className="form-control"
-                type="password"
-                onChange={(event) => setPasswordRepeat(event.target.value)}
-              />
-            </div>
+            <Input
+              id="password"
+              label="Password"
+              error={errors.password}
+              onChange={(event) => setPassword(event.target.value)}
+              type="password"
+            />
+
+            <Input
+              id="passwordRepeat"
+              label="Password Repeat"
+              error={passwordRepeatError}
+              onChange={(event) => setPasswordRepeat(event.target.value)}
+              type="password"
+            />
 
             {successMessage && (
               <div className="alert alert-success">{successMessage}</div>
             )}
 
-             {generalerror && (
+            {generalerror && (
               <div className="alert alert-danger">{generalerror}</div>
             )}
 
