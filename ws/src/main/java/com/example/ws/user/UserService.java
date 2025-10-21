@@ -13,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.ws.user.exception.ActivationNotificationException;
+import com.example.ws.user.exception.NotUniqueEmailException;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -33,6 +36,8 @@ public class UserService {
       sendActivationEmail(user);
     } catch (DataIntegrityViolationException ex) {
       throw new NotUniqueEmailException();
+    } catch (MailException ex) {
+      throw new ActivationNotificationException();
     }
 
   }

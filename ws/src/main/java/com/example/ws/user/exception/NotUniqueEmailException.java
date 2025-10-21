@@ -1,4 +1,4 @@
-package com.example.ws.user;
+package com.example.ws.user.exception;
 
 
 import java.util.Collections;

@@ -15,6 +15,8 @@ import com.example.ws.error.ApiError;
 import com.example.ws.shared.GenericMessage;
 import com.example.ws.shared.Messages;
 import com.example.ws.user.dto.UserCreate;
+import com.example.ws.user.exception.ActivationNotificationException;
+import com.example.ws.user.exception.NotUniqueEmailException;
 
 import jakarta.validation.Valid;
 
@@ -61,8 +63,20 @@ public class UserController
         apiError.setMessage(exception.getMessage());
         apiError.setStatus(400);
         apiError.setValidationErrors(exception.getValidationErrors());
-        return ResponseEntity.badRequest().body(apiError);
+        return ResponseEntity.status(400).body(apiError);
 
     }
+     
+     @ExceptionHandler(ActivationNotificationException.class)
+    ResponseEntity<ApiError> handleActivationNotifiacationException(ActivationNotificationException exception)
+    {
+        ApiError apiError = new ApiError();
+        apiError.setPath("/api/v1/users");
+        apiError.setMessage(exception.getMessage());
+        apiError.setStatus(502);
+        return ResponseEntity.status(502).body(apiError);
+
+    }
+
 
 }
